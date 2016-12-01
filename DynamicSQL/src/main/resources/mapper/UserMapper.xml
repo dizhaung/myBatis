@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.UserDao">
+
+	<select id="selectUserByID" parameterType="int" resultType="User">
+		select * from `user` where id = #{id}
+	</select>
+
+	<select id="selectUser" parameterType="User" resultType="User">
+		select * from `user` where
+		<if test="id != null">
+			id = #{id}
+		</if>
+		<if test="name != null">
+			and name = #{name}
+		</if>
+	</select>
+
+	<select id="selectUser1" parameterType="User" resultType="User">
+		select * from `user` where
+		<choose>
+			<when test="id != null">
+				id = #{id}
+			</when>
+			<when test="name != null">
+				name = #name}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="batchSaveUsers" parameterType="ArrayList">
+		insert into user (id,name) values
+		<foreach collection="list" separator=",">
+			(id,name)
+		</foreach>
+	</insert>
+
+</mapper>
