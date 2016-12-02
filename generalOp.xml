@@ -1,0 +1,117 @@
+<mapper namespace="SpiderTemplateDao">
+<resultMap id="BaseResultMap"
+type="ListTemplateConfig">
+<id property="tempId" column="id" />
+<result property="templateKey" column="template_key" />
+<result property="detailKey" column="detail_key" />
+<result property="createdTime" column="created_time" />
+<result property="createdUser" column="created_user" />
+<result property="updatedTime" column="updated_time" />
+<result property="updatedUser" column="updated_user" />
+<result property="xpathText" column="xpath_text" />
+<result property="urlPrefix" column="url_prefix" />
+<result property="includeRegix" column="include_regix" />
+</resultMap>
+
+
+<sql id="Base_Column_List">
+id, template_key, detail_key, created_time, created_user, updated_time,
+updated_user, xpath_text, url_prefix, include_regix
+</sql>
+
+<select id="findOneBySourceId" resultMap="BaseResultMap" parameterType="integer">
+        SELECT  
+        <include refid="Base_Column_List" />
+        FROM   sp_template
+        WHERE  id = #{tempId}
+    </select>
+    
+    
+    <select id="countSize"  resultType="java.lang.Integer">
+        SELECT  count(*)
+        FROM   sp_template
+    </select>
+    
+    <select id="findAllSource" resultMap="BaseResultMap" >
+        SELECT  
+        <include refid="Base_Column_List" />
+        FROM   sp_template
+    </select>
+    
+    <select id="findOneByTemplateKey" resultMap="BaseResultMap" parameterType="String">
+        SELECT  
+        <include refid="Base_Column_List" />
+        FROM   sp_template
+        WHERE  template_key = #{templateKey}
+    </select>
+    
+    <delete id="delete" parameterType="String">
+DELETE FROM sp_template WHERE template_key = #{templateKey}
+</delete>
+
+<select id="countSourceSize" resultType="java.lang.Long">
+select count(*)
+from sp_template
+<where>
+        <if test="templateKey != null and templateKey !=''">
+        and template_key=#{templateKey}
+        </if>
+        <if test="detailKey != null and detailKey !='' ">
+        and detail_key=#{detailKey}
+        </if>
+        <if test="url != null and url !=''">
+        and url_prefix like '%${url}%'
+        </if>
+        </where>
+</select>
+
+<select id="getTemplatesourceResult" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from sp_template
+         <where>
+        <if test="templateKey != null and templateKey !=''">
+        and template_key=#{templateKey}
+        </if>
+        <if test="detailKey != null and detailKey !=''">
+        and detail_key=#{detailKey}
+        </if>
+        <if test="url != null and url !=''">
+        and url_prefix like '%${url}%'
+        </if>
+        </where>
+        order by id
+        limit #{startPos}, #{pageSize}
+    </select>
+
+<update id="modifySource">
+        update sp_template 
+      <set>     
+        <if test="templateKey != null and templateKey != '' ">
+        template_key=#{templateKey},
+        </if>
+        <if test="detailKey != null and detailKey != '' ">
+        detail_key=#{detailKey},
+        </if>
+        <if test="xpathText != null and xpathText != '' ">
+        xpath_text=#{xpathText},
+        </if>
+        <if test="urlPrefix != null and urlPrefix != '' ">
+        url_prefix=#{urlPrefix},
+        </if>
+        <if test="includeRegix != null  and includeRegix != '' ">
+        include_regix=#{includeRegix},
+        </if>
+        </set>
+        where id=#{sourceId} 
+   </update>
+    
+    
+    
+    <insert id="insertSource" parameterType="com.tcl.content.spider.persistence.entity.ListTemplateConfig"
+useGeneratedKeys="true" >
+insert into sp_template (template_key, detail_key, created_time, created_user, 
+updated_time, updated_user, xpath_text, url_prefix, include_regix)
+values (#{templateKey}, #{detailKey}, now(), -1, now(), -1, #{xpathText}, #{urlPrefix},
+#{includeRegix})
+</insert>
